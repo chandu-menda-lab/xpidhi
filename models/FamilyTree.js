@@ -45,7 +45,11 @@ const FamilyTreeSchema = new mongoose.Schema({
   relation: {
     type: ObjectId,
     ref: 'Relation'
-  }
+  },
+  user: {
+    type: ObjectId,
+    ref: 'User'
+  },
 }, {
   timestamps: true,
 });

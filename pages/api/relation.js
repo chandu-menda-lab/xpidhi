@@ -62,6 +62,7 @@ async function handlePostRequest(req, res) {
         lastName,
         email,
         user,
+        relationType
       }).save();
 
       //console.log(newUserRelation);
@@ -83,6 +84,7 @@ async function handlePostRequest(req, res) {
           root: false,
           relation: newUserRelation,
           childrens: [selectedNodeId],
+          user
         }).save();
       } else if (relationType === 'childrens') {
         level = selectedLevel - 1;
@@ -93,6 +95,7 @@ async function handlePostRequest(req, res) {
           root: false,
           relation: newUserRelation,
           parents: [selectedNodeId],
+          user,
         }).save();
       } else if (relationType === 'siblings') {
         let selectedUserParents = selectNodeTreeDetails.parents;
@@ -102,41 +105,45 @@ async function handlePostRequest(req, res) {
         } else {
           let parentLevel = level + 1;
           const newParent1Relation = await new Relation({
-            firstName: "firstName",
+            firstName: "P1 firstName",
             lastName: "lastName",
             email: "parent1@gmail.com",
             user,
+            relationType
           }).save();
 
           const newParent1FamilyTree = await new FamilyTree({
             treeCode,
-            name: firstName,
+            name: "P1 firstName",
             level: parentLevel,
             root: false,
             relation: newParent1Relation,
-            siblings: [selectedNodeId]
+            siblings: [selectedNodeId],
+            user,
           }).save();
 
           if(selectedUserParents.length == 0) {
             const newParent2Relation = await new Relation({
-              firstName: "firstName",
+              firstName: "P2 firstName",
               lastName: "lastName",
               email: "parent2@gmail.com",
               user,
+              relationType
             }).save();
   
             const newParent2FamilyTree = await new FamilyTree({
               treeCode,
-              name: "firstName",
+              name: "P2 firstName",
               level: parentLevel,
               root: false,
               relation: newParent2Relation,
-              siblings: [selectedNodeId]
+              siblings: [selectedNodeId],
+              user,
             }).save();
 
             parents.push(newParent1FamilyTree._id, newParent2FamilyTree._id);
           } else if(selectedUserParents.length == 1) {
-            parents.push(selectedUserParents[0]._id, newParent2Relation._id);
+            parents.push(selectedUserParents[0]._id, newParent1Relation._id);
           }
         }
 
@@ -147,14 +154,24 @@ async function handlePostRequest(req, res) {
           root: false,
           relation: newUserRelation,
           siblings: [selectedNodeId],
-          parents: parents
+          parents: parents,
+          user,
         }).save();
+
+        await FamilyTree.findOneAndUpdate(
+          {
+            _id: selectedNodeId,
+          },
+          {
+            $addToSet: { siblings: newRelationFamilyTree }
+          });
       } else if (relationType === 'partners') {
         const newKidRelation = await new Relation({
           firstName: "kid firstname",
           lastName: "kid lastName",
           email: "kid@gmail.com",
           user,
+          relationType
         }).save();
   
         console.log(newKidRelation);
@@ -165,7 +182,8 @@ async function handlePostRequest(req, res) {
           level: level,
           root: false,
           relation: newUserRelation,
-          partners: [selectedNodeId]
+          partners: [selectedNodeId],
+          user,
         }).save();
 
         console.log(newRelationFamilyTree);
@@ -177,7 +195,8 @@ async function handlePostRequest(req, res) {
           root: false,
           relation: newKidRelation,
           parents: [selectedNodeId, newRelationFamilyTree._id],
-          childrens:[newKidRelation]
+          childrens:[newKidRelation],
+          user,
         }).save();
 
         console.log(newKidRelationFamilyTree);
@@ -188,8 +207,9 @@ async function handlePostRequest(req, res) {
         _id: selectedNodeId,
       });
       //console.log(userFamilyTree);
+      
       if(relationType === "siblings" && parents.length > 0) {
-        await FamilyTree.findOneAndUpdate(
+         await FamilyTree.findOneAndUpdate(
           {
             _id: userFamilyTree._id,
           },
@@ -198,7 +218,7 @@ async function handlePostRequest(req, res) {
           }
         );
       } else {
-        await FamilyTree.findOneAndUpdate(
+         await FamilyTree.findOneAndUpdate(
           {
             _id: userFamilyTree._id,
           },
@@ -207,11 +227,12 @@ async function handlePostRequest(req, res) {
           }
         );
       }
-      
-
+      const familyTreeDetails = await FamilyTree.find({
+        treeCode: treeCode
+      });
       //@Todo have to update the relation in new Object
 
-      res.status(200).json(newUserRelation);
+      res.status(200).json(familyTreeDetails);
     }
   } catch (error) {
     console.error(error);
@@ -233,5 +254,6 @@ async function createRelation(requestData, user) {
     lastName,
     email,
     user,
+    relationType
   }).save();
 }

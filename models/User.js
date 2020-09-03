@@ -32,7 +32,7 @@ const UserSchema = new mongoose.Schema(
     },
     treeCode: {
       type: String,
-      unique: true,
+      unique: false,
     },
     role: {
       type: String,

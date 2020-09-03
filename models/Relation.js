@@ -33,6 +33,11 @@ const RelationSchema = new mongoose.Schema({
     type: ObjectId,
     ref: 'User'
   },
+  relationType: {
+    type: String,
+    required: true,
+    default: "self"
+  }
 }, {
   timestamps: true,
 });

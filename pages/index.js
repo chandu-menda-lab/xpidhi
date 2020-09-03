@@ -136,9 +136,9 @@ function Home({ user }) {
       plotTree();
 
       // Pre-select the root node
-      var selectedNode = get('5f3ff33af8197a3a2c0f0306');
-      if (selectedNode != null)
-        document.getElementById('title').innerText = selectedNode.innerText;
+      // var selectedNode = get('5f47fb35751e8d4318d9db0d');
+      // if (selectedNode != null)
+      //   document.getElementById('title').innerText = selectedNode.innerText;
     }
   }, [familyTree.data]);
 
@@ -152,7 +152,9 @@ function Home({ user }) {
   }, [familyTree.selectedNode]);
 
   React.useEffect(() => {
+    console.log("familyTree.relationType");
     const aboutContoller = new AbortController();
+    //plotTree();
     if (familyTree.relationType === 'childrens') {
       addPerson(familyTree.relationType);
       var childId = personDetails._id;
@@ -162,13 +164,13 @@ function Home({ user }) {
     } else if (familyTree.relationType === 'siblings') {
       // Creating Mother
       createParents(personDetails._id);
-      //plotTree();
+      plotTree();
     }
 
     return function cleanup() {
       aboutContoller.abort();
     };
-  }, [referencePerson]);
+  }, [familyTree.relationType]);
 
   function init() {
     setTree(document.getElementById('tree'));
@@ -572,17 +574,17 @@ function Home({ user }) {
     return node;
   }
 
-  function addRelation(id, relationType, newPerson) {
-    var data = familyTree.data;
-    console.log(newPerson);
-    data.forEach(function (person) {
-      if (person[relationType].indexOf(id) != -1) {
-        person[relationType].push(newPerson._id);
-        newPerson[relationType].push(person._id);
-      }
-    });
-    return newPerson;
-  }
+  // function addRelation(id, relationType, newPerson) {
+  //   var data = familyTree.data;
+  //   console.log(newPerson);
+  //   data.forEach(function (person) {
+  //     if (person[relationType].indexOf(id) != -1) {
+  //       person[relationType].push(newPerson._id);
+  //       newPerson[relationType].push(person._id);
+  //     }
+  //   });
+  //   return newPerson;
+  // }
 
   function findLevel(level) {
     var element = levelMap.filter(function (elem) {
@@ -611,31 +613,31 @@ function Home({ user }) {
     return document.getElementById(id);
   }
 
-  async function getPersonTreeDetails(id) {
-    const url = `${baseUrl}/api/familyTree`;
-    const token = cookie.get('token');
-    const headers = {
-      headers: {
-        Authorization: token,
-      },
-    };
-    const payload = {
-      params: {
-        _id: id,
-      },
-    };
-    const personTreDetails = await axios.get(url, headers, payload);
-    console.log('::getPerson::');
-    console.log(personTreDetails);
+  // async function getPersonTreeDetails(id) {
+  //   const url = `${baseUrl}/api/familyTree`;
+  //   const token = cookie.get('token');
+  //   const headers = {
+  //     headers: {
+  //       Authorization: token,
+  //     },
+  //   };
+  //   const payload = {
+  //     params: {
+  //       _id: id,
+  //     },
+  //   };
+  //   const personTreDetails = await axios.get(url, headers, payload);
+  //   console.log('::getPerson::');
+  //   console.log(personTreDetails);
 
-    let data = familyTree.data;
-    console.log('::getPerson::');
-    console.log(data);
-    var element = data.filter(function (elem) {
-      return elem._id == id;
-    });
-    return element.pop();
-  }
+  //   let data = familyTree.data;
+  //   console.log('::getPerson::');
+  //   console.log(data);
+  //   var element = data.filter(function (elem) {
+  //     return elem._id == id;
+  //   });
+  //   return element.pop();
+  // }
 
   function getPerson(id) {
     let data = familyTree.data;
@@ -680,8 +682,8 @@ function Home({ user }) {
         newPerson.siblings.push(thisPerson._id);
         newPerson.level = thisPerson.level;
         // Add relation for all other relatives of originating person
-        newPerson = addRelation(thisPerson._id, relationType, newPerson);
-        newPerson.parents = thisPerson.parents; // updated parents
+        // newPerson = addRelation(thisPerson._id, relationType, newPerson);
+        // newPerson.parents = thisPerson.parents; // updated parents
         break;
       case 'parents':
         newPerson.childrens.push(thisPerson._id);
@@ -691,69 +693,69 @@ function Home({ user }) {
     data.push(newPerson);
     console.log(data);
 
-    if (relationType == 'parents' && tempSibling !== false) {
-      var siblingDetails = getPerson(tempSibling._id);
-      if (siblingDetails.parents.length < 2) {
-        generateNewPerson();
-        setReferencePerson(tempSibling);
-        updatePerson(tempSibling._id, 'parents', newPerson._id);
-      }
-    }
+    // if (relationType == 'parents' && tempSibling !== false) {
+    //   var siblingDetails = getPerson(tempSibling._id);
+    //   if (siblingDetails.parents.length < 2) {
+    //     generateNewPerson();
+    //     setReferencePerson(tempSibling);
+    //     updatePerson(tempSibling._id, 'parents', newPerson._id);
+    //   }
+    // }
 
     //Start @Chandu - Created default child for parents
-    if (relationType == 'partners') {
-      console.log('partners===================');
-      setFamilyTree((prevState) => ({
-        ...prevState,
-        relationType: 'childrens',
-      }));
-      generateNewPerson();
-      setReferencePerson(newPerson);
-    }
+    // if (relationType == 'partners') {
+    //   console.log('partners===================');
+    //   setFamilyTree((prevState) => ({
+    //     ...prevState,
+    //     relationType: 'childrens',
+    //   }));
+    //   generateNewPerson();
+    //   setReferencePerson(newPerson);
+    // }
     //End @Chandu - Created default child for parents
 
     //Start @Chandu - Created default Parents when we create sibling
-    if (relationType == 'siblings') {
-      var siblingDetails = getPerson(newPerson.siblings[0]);
-      setTempSibling(newPerson);
+    // if (relationType == 'siblings') {
+    //   var siblingDetails = getPerson(newPerson.siblings[0]);
+    //   setTempSibling(newPerson);
 
-      if (siblingDetails.parents.length == 0) {
-        setFamilyTree((prevState) => ({
-          ...prevState,
-          relationType: 'parents',
-        }));
+    //   if (siblingDetails.parents.length == 0) {
+    //     setFamilyTree((prevState) => ({
+    //       ...prevState,
+    //       relationType: 'parents',
+    //     }));
 
-        generateNewPerson();
-        setReferencePerson(newPerson);
-        // Creating Mother
-        // createParents(newPerson.id);
-      } else {
-        console.log('Else If');
-        setFamilyTree((prevState) => ({
-          ...prevState,
-          relationType: 'parents',
-        }));
+    //     generateNewPerson();
+    //     setReferencePerson(newPerson);
+    //     // Creating Mother
+    //     // createParents(newPerson.id);
+    //   } else {
+    //     console.log('Else If');
+    //     setFamilyTree((prevState) => ({
+    //       ...prevState,
+    //       relationType: 'parents',
+    //     }));
 
-        generateNewPerson();
-        setReferencePerson(newPerson);
-        // updateExistingParents(
-        //   newId,
-        //   'parents',
-        //   newPerson.id,
-        //   siblingDetails.parents
-        // );
-      }
+    //     generateNewPerson();
+    //     setReferencePerson(newPerson);
+    //     // updateExistingParents(
+    //     //   newId,
+    //     //   'parents',
+    //     //   newPerson.id,
+    //     //   siblingDetails.parents
+    //     // );
+    //   }
 
-      // if (siblingDetails.parents.length < 2) {
-      //   generateNewPerson();
-      //   setReferencePerson(newPerson);
+    //   // if (siblingDetails.parents.length < 2) {
+    //   //   generateNewPerson();
+    //   //   setReferencePerson(newPerson);
 
-      //   // Creating Father
-      //   // createParents(newPerson.id);
-      // }
+    //   //   // Creating Father
+    //   //   // createParents(newPerson.id);
+    //   // }
 
-      plotTree();
-    }
+    //   plotTree();
+    // }
     //End @Chandu - Created default Parents when we create sibling
   }
 
@@ -882,17 +884,19 @@ function Home({ user }) {
     }
   }
 
-  function handleAddRelation(newValue, relationType) {
+  function handleAddRelation(treeDetails, relationType) {
     console.log('::handleAddRelation::');
-    console.log(newValue);
+    console.log(treeDetails);
     console.log('relationType');
     console.log(relationType);
-
+    
     setFamilyTree((prevState) => ({
       ...prevState,
       relationType: relationType,
+      data:treeDetails
     }));
     setAddRelationFlag(false);
+    plotTree();
     closeModal();
     //generateNewPerson(newValue);
   }
@@ -915,6 +919,53 @@ function Home({ user }) {
     console.log(people);
   }
 
+  function inviteMerge() {
+    console.log('================inviteMerge===========');
+    const sourceTreecode = 'T82BNRc1n';
+    const targetTreecode = 'qBsBVpfPt';
+
+    // get source tree data 
+    // get target tree data
+    // generate new tree code and update to source user & relatives and target user & relatives
+    // check and update the tree code with other relations - Siblings
+
+    
+  }
+
+  async function mergeTrees() {
+    console.log('=======Merge Trees=========');
+    // Will get source tree code based on userId from url and get target tree code based on login user when I click on link from email
+    // Remove target node from source user tree
+    
+    const sourceTreecode = '_KQxCRwdQ';
+    const targetTreecode = userDetails.treeCode;  // Check current user treecode and request param tree code
+    const sourceTreeId = '5f513319b6368f19048694fc';
+    const targetTreeId = '5f5133b4b6368f1904869509';
+    //const currentUserTreeCode = userDetails.treeCode;
+    const currentUserId = userDetails._id;
+
+    try{
+      const url = `${baseUrl}/api/merge`;
+      const token = cookie.get('token');
+      const payload = {
+        ...{sourceTreecode},
+        ...{targetTreecode},
+        ...{sourceTreeId},
+        ...{targetTreeId},
+        ...{currentUserId}
+      };
+      const headers = {
+        headers: {
+          Authorization: token,
+        },
+      };
+      const response = await axios.post(url, payload, headers);
+    } catch (error) {
+      console.error(error);
+      //catchErrors(error, setError);
+    }    
+  }
+
   //console.log(personDetails);
   return (
     <>
@@ -925,6 +976,8 @@ function Home({ user }) {
             <Button onClick={startFresh}>Clear</Button>
             <Button onClick={openModal}>Add Relation</Button>
             <Button onClick={assignParents}>Assign Parents</Button>
+            <Button onClick={inviteMerge}>Invite for merge</Button>
+            <Button onClick={mergeTrees}>Merge Trees</Button>
           </Grid.Column>
           {assignParentsFlag ? (
             <>

@@ -66,7 +66,8 @@ export default async (req, res) => {
           name: firstName,
           level: 0,
           root: true,
-          relation: newUserRelation
+          relation: newUserRelation,
+          user: newUser
         }).save();
         console.log('New Family tree');
         console.log(newFamilyTree);
