@@ -153,23 +153,18 @@ function Home({ user }) {
 
   React.useEffect(() => {
     console.log("familyTree.relationType");
-    const aboutContoller = new AbortController();
     //plotTree();
     if (familyTree.relationType === 'childrens') {
       addPerson(familyTree.relationType);
       var childId = personDetails._id;
       var parentId = referencePerson._id;
       updatePerson(childId, 'parents', parentId);
-      plotTree();
+      //plotTree();
     } else if (familyTree.relationType === 'siblings') {
       // Creating Mother
       createParents(personDetails._id);
-      plotTree();
+      //plotTree();
     }
-
-    return function cleanup() {
-      aboutContoller.abort();
-    };
   }, [familyTree.relationType]);
 
   function init() {
@@ -661,7 +656,7 @@ function Home({ user }) {
 
     var newPerson = personDetails,
       thisPerson;
-    thisPerson = getPerson(selectedNode._id);
+    thisPerson = getPerson(selectedNode.id);
 
     console.log('newPerson');
     console.log(newPerson);
@@ -896,7 +891,7 @@ function Home({ user }) {
       data:treeDetails
     }));
     setAddRelationFlag(false);
-    plotTree();
+    //plotTree();
     closeModal();
     //generateNewPerson(newValue);
   }

@@ -99,7 +99,7 @@ function Create({ handleRelation, selectedLevel, selectedNodeId }) {
       };
       const response = await axios.post(url, payload, headers);
       //console.log(response);
-      handleRelation(response, userRelation.relationType);
+      handleRelation(response.data, userRelation.relationType);
       // handleCreateTree();
       // handleCreateRelation(response.data);
     } catch (error) {

@@ -59,7 +59,7 @@ async function handlePostRequest(req, res) {
         // Get tree details from both users
         if(targetTreeDetails.siblings.length > 0) {
           console.log("Source tree details");
-          const updatedSourceTreeDetails = await FamilyTree.findOneAndUpdate({
+          await FamilyTree.findOneAndUpdate({
               treeCode: sourceTreecode,
               root: true
           }, {
@@ -69,7 +69,7 @@ async function handlePostRequest(req, res) {
 
         if(sourceTreeDetails.siblings.length > 0) {
           console.log("Target tree details");
-          const updatedTargetTreeDetails = await FamilyTree.findOneAndUpdate({
+          await FamilyTree.findOneAndUpdate({
               treeCode: targetTreecode,
               root: true
           }, {
