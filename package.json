@@ -28,6 +28,6 @@
     "stripe": "^7.5.0",
     "use-state-with-callback": "^1.0.18",
     "uuid": "^3.3.2",
-    "validator": "^11.1.0"
+    "validator": "^13.7.0"
   }
 }
